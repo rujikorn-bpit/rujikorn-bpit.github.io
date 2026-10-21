@@ -1,0 +1,200 @@
+/* MANA STORE Link Page, design 2c "Slant band".
+   Colours and font come from config.json as CSS variables (set by render.js). */
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+
+#page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: #1A1A1A;
+  font-family: var(--font);
+}
+
+.lp {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. Header band */
+.lp-band {
+  position: relative;
+  height: 178px;
+  background: var(--secondary);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+}
+.lp-stripe { position: absolute; top: -20px; height: 230px; }
+.lp-stripe-a { left: 46%; width: 30px; background: var(--accent); transform: skewX(28deg); }
+.lp-stripe-b { left: 62%; width: 14px; background: #FFFFFF; opacity: .14; transform: skewX(-28deg); }
+
+/* 2. Content */
+.lp-body {
+  position: relative;
+  padding: 0 20px 28px;
+  margin-top: -74px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* 3. Profile header */
+.lp-header { display: flex; flex-direction: column; gap: 12px; }
+.lp-logo {
+  width: 104px; height: 104px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 5px var(--bg);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.lp-logo img { width: 100%; height: 100%; object-fit: contain; }
+.lp-logo-fallback { font-size: 48px; font-weight: 700; color: var(--secondary); }
+.lp-text { display: flex; flex-direction: column; gap: 4px; }
+.lp-name { margin: 0; font-size: 30px; line-height: 1.05; font-weight: 700; letter-spacing: .01em; }
+.lp-tagline { margin: 4px 0 0; font-size: 17px; line-height: 1.4; font-weight: 500; color: var(--secondary); text-wrap: pretty; }
+.lp-tagline-en { margin: 0; font-size: 13px; line-height: 1.4; color: #5C5450; }
+
+.lp-socials { display: flex; gap: 10px; margin-top: 2px; }
+.lp-social {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--secondary);
+  color: var(--secondary-ink);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .08s;
+}
+.lp-social:active { transform: scale(.94); }
+
+/* 4. Promo card */
+.lp-promo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 128px;
+  min-height: 150px;
+  background: var(--primary);
+  color: var(--primary-ink);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.lp-promo-text { padding: 16px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.lp-promo-tag {
+  font-size: 12px; font-weight: 500;
+  background: var(--primary-ink); color: var(--chip-text);
+  padding: 3px 9px; border-radius: 6px;
+  transform: skewX(-8deg);
+}
+.lp-promo-title { margin: 4px 0 0; font-size: 18px; font-weight: 700; line-height: 1.25; text-wrap: pretty; }
+.lp-promo-body { margin: 0; font-size: 13px; line-height: 1.4; }
+.lp-promo-cta {
+  margin-top: auto;
+  min-height: 40px; padding: 0 16px;
+  border-radius: 10px;
+  background: var(--primary-ink); color: var(--chip-text);
+  font-size: 15px; font-weight: 500;
+  display: flex; align-items: center;
+  text-decoration: none;
+}
+.lp-promo-cta:active { transform: translateY(1px); }
+.lp-promo-img { background: #F3E7DE; clip-path: polygon(28% 0, 100% 0, 100% 100%, 0 100%); }
+.lp-promo-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* 5. Link buttons */
+.lp-links { display: flex; flex-direction: column; gap: 10px; }
+.lp-link {
+  --chip: var(--primary);
+  --chip-ink: var(--primary-ink);
+  min-height: 64px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1.5px solid #EADFD6;
+  color: #1A1A1A;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 14px 0 12px;
+  text-decoration: none;
+  transition: transform .08s, background .08s;
+}
+.lp-link.is-secondary { --chip: var(--secondary); --chip-ink: var(--secondary-ink); }
+.lp-link:active { transform: scale(.98); background: #FCEBE2; border-color: var(--primary); }
+@media (hover: hover) { .lp-link:hover { background: #FEF5EF; } }
+
+.lp-chip {
+  width: 46px; height: 40px; flex: none;
+  border-radius: 8px;
+  background: var(--chip); color: var(--chip-ink);
+  transform: skewX(-12deg);
+  display: flex; align-items: center; justify-content: center;
+}
+.lp-chip svg { transform: skewX(12deg); }
+.lp-labels { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.lp-label { font-size: 17px; font-weight: 400; }
+.lp-sub { font-size: 12px; color: #5C5450; }
+.lp-chevron { color: var(--chip); flex: none; }
+
+/* 6. Footer */
+.lp-footer {
+  margin-top: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 12px; color: #5C5450;
+}
+.lp-dash { width: 14px; height: 4px; }
+.lp-dash-a { background: var(--secondary); transform: skewX(-30deg); }
+.lp-dash-b { background: var(--accent); transform: skewX(30deg); }
+
+/* Focus */
+.lp a:focus-visible, .lp-sheet a:focus-visible, .lp-sheet button:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+/* Contact pop-up (bottom sheet) */
+.lp-overlay {
+  position: fixed; inset: 0; z-index: 10;
+  background: rgba(26, 26, 26, .5);
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: lp-fade .15s ease-out;
+}
+.lp-overlay[hidden] { display: none; }
+.lp-sheet {
+  width: 100%; max-width: 480px;
+  background: var(--bg);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
+  font-family: var(--font);
+  animation: lp-up .2s ease-out;
+}
+.lp-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lp-sheet-title { margin: 0; font-size: 20px; font-weight: 700; color: #1A1A1A; }
+.lp-sheet-close {
+  width: 44px; height: 44px; flex: none;
+  border: 0; border-radius: 12px;
+  background: #F3E7DE; color: #1A1A1A;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.lp-sheet-hint { margin: 2px 0 16px; font-size: 13px; color: #5C5450; }
+.lp-calls { display: flex; flex-direction: column; gap: 10px; }
+.lp-call {
+  min-height: 56px;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--secondary-ink);
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px 0 16px;
+  font-size: 18px; font-weight: 500;
+  text-decoration: none;
+  transition: transform .08s;
+}
+.lp-call:active { transform: scale(.98); }
+.lp-call-icon { color: var(--primary); display: flex; }
+.lp-call-icon svg { fill: currentColor; }
+.lp-call-num { letter-spacing: .01em; }
+.lp-call-name { margin-left: auto; }
+
+@keyframes lp-fade { from { opacity: 0; } }
+@keyframes lp-up { from { transform: translateY(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .lp-overlay, .lp-sheet { animation: none; }
+}

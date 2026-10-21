@@ -1,0 +1,38 @@
+{
+  "name": "MANA STORE",
+  "tagline": "หัวเชื้อทำความสะอาด เข้มข้น คุ้มค่า",
+  "taglineEn": "Concentrated cleaning, real value",
+  "logoUrl": "",
+  "primary": "#FF7F17",
+  "secondary": "#2B6684",
+  "accent": "#D7602F",
+  "background": "#FFF8F3",
+  "font": "Prompt",
+  "socials": {
+    "line": "",
+    "facebook": "",
+    "tiktok": "https://www.tiktok.com/@manastore1?_r=1&_t=ZS-9AjSrmOMsoG",
+    "instagram": ""
+  },
+  "promo": {
+    "enabled": false,
+    "tag": "โปรเดือนนี้",
+    "title": "ซื้อ 2 แถม 1 หัวเชื้อถูพื้น",
+    "text": "ถึง 31 ต.ค. นี้เท่านั้น",
+    "cta": "ดูโปร",
+    "url": "",
+    "imageUrl": ""
+  },
+  "links": [
+    { "label": "ช้อปที่ Shopee", "sub": "Shopee shop", "url": "https://th.shp.ee/gMY2ax7Q", "icon": "bag", "kind": "primary", "visible": true },
+    { "label": "ช้อปที่ Lazada", "sub": "Lazada shop", "url": "https://s.lazada.co.th/s.Z9jZYA", "icon": "cart", "kind": "primary", "visible": true },
+    { "label": "ช้อปที่ TikTok", "sub": "ดูไลฟ์และสั่งซื้อที่ TikTok Shop", "url": "https://www.tiktok.com/@manastore1?_r=1&_t=ZS-9AjSrmOMsoG", "icon": "tiktok", "kind": "primary", "visible": true },
+    { "label": "วิธีผสม / วิธีใช้", "sub": "How to dilute", "url": "", "icon": "drop", "kind": "secondary", "visible": false },
+    { "label": "ติดต่อเรา / โทร", "sub": "Contact us", "url": "#contacts", "icon": "phone", "kind": "secondary", "visible": true }
+  ],
+  "contacts": [
+    { "name": "คุณเบนซ์", "phone": "063-120-9274" },
+    { "name": "คุณต้า", "phone": "064-967-1789" },
+    { "name": "คุณแนน", "phone": "081-469-0823" }
+  ]
+}
