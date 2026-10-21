@@ -3,6 +3,7 @@
   "tagline": "หัวเชื้อทำความสะอาด เข้มข้น คุ้มค่า",
   "taglineEn": "Concentrated cleaning, real value",
   "logoUrl": "",
+  "logo": { "size": 104, "zoom": 100, "x": 0, "y": 0, "border": "#FF7F17", "borderWidth": 3 },
   "primary": "#FF7F17",
   "secondary": "#2B6684",
   "accent": "#D7602F",

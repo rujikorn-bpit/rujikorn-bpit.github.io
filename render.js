@@ -57,6 +57,11 @@ function external(a, url) {
   if (/^https?:/i.test(url)) { a.target = '_blank'; a.rel = 'noopener'; }
 }
 
+// Logo position (x, y in % of the circle) and zoom (in %) inside the circle.
+function logoTransform(lg) {
+  return `translate(${lg.x ?? 0}%, ${lg.y ?? 0}%) scale(${(lg.zoom ?? 100) / 100})`;
+}
+
 function telHref(phone) { return 'tel:' + String(phone).replace(/[^\d+]/g, ''); }
 
 function renderPage(config, root) {
@@ -64,6 +69,7 @@ function renderPage(config, root) {
   const primary = c.primary || '#FF7F17';
   const secondary = c.secondary || '#2B6684';
   const font = c.font || 'Prompt';
+  const lg = c.logo || {};
 
   const vars = {
     '--primary': primary,
@@ -73,7 +79,10 @@ function renderPage(config, root) {
     '--secondary-ink': ink(secondary),
     '--accent': c.accent || '#D7602F',
     '--bg': c.background || '#FFF8F3',
-    '--font': `'${font}', 'Kanit', sans-serif`
+    '--font': `'${font}', 'Kanit', sans-serif`,
+    '--logo-size': (lg.size ?? 104) + 'px',
+    '--logo-border': lg.border || primary,
+    '--logo-border-w': (lg.borderWidth ?? 3) + 'px'
   };
   for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
 
@@ -94,6 +103,8 @@ function renderPage(config, root) {
     const img = el('img');
     img.src = c.logoUrl;
     img.alt = c.name || 'Logo';
+    img.draggable = false;
+    img.style.transform = logoTransform(lg);
     logo.appendChild(img);
   } else {
     logo.appendChild(el('span', 'lp-logo-fallback', (c.name || 'M').trim().charAt(0)));

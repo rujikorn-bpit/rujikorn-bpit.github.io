@@ -39,19 +39,43 @@
     #qr svg { width: 200px; height: 200px; }
     .hint { font-size: .85rem; color: #666; margin: 6px 0 0; }
     code { background: #f1f2f5; padding: 1px 5px; border-radius: 4px; }
+    .savebar { position: sticky; top: 0; z-index: 5; }
+    button.save { background: #2B6684; color: #fff; border-color: #2B6684; font-weight: 600; }
+    button.save:hover { background: #24576f; }
+    button:disabled { opacity: .5; cursor: default; }
+    #save-status { font-size: .9rem; margin: 10px 0 0; min-height: 1.3em; }
+    #save-status.ok { color: #1d7a3e; }
+    #save-status.err { color: #b3261e; }
+    #save-status.dirty { color: #b25c00; }
+    details { margin-top: 12px; }
+    summary { cursor: pointer; font-size: .9rem; color: #444; }
+    input[type=password] { width: 100%; padding: 8px 10px; border: 1px solid #ccd; border-radius: 8px; font: inherit; min-width: 0; }
   </style>
 </head>
 <body>
 <div class="wrap">
   <div>
-    <div class="card">
+    <div class="card savebar">
       <h1>Link Page Editor</h1>
-      <p class="hint">Change the data. Click "Download config.json". Upload the file to GitHub to update the Link Page.</p>
+      <p class="hint">Change the data, then click "Save to GitHub". The Link Page updates in about 1 minute.</p>
       <div class="actions" style="margin-top:12px">
-        <button class="primary" id="download-config">Download config.json</button>
+        <button class="save" id="save-github">Save to GitHub</button>
+        <button id="download-config">Download config.json</button>
         <button id="open-config">Open config.json</button>
         <input type="file" id="config-file" accept=".json,application/json" hidden>
       </div>
+      <p id="save-status" role="status"></p>
+      <details id="gh-settings">
+        <summary>GitHub settings</summary>
+        <label for="gh-token">Token (kept only in this browser, on this computer)</label>
+        <input type="password" id="gh-token" autocomplete="off" spellcheck="false" placeholder="github_pat_...">
+        <label for="gh-repo">Repository</label>
+        <input type="text" id="gh-repo" value="rujikorn-bpit/rujikorn-bpit.github.io">
+        <div class="actions" style="margin-top:12px">
+          <button id="gh-connect">Save settings and test</button>
+          <button id="gh-forget">Remove token from this browser</button>
+        </div>
+      </details>
     </div>
 
     <div class="card">
@@ -65,8 +89,18 @@
       <label for="logo">Logo URL (or select a file)</label>
       <div class="row">
         <input type="url" id="logo" data-path="logoUrl" placeholder="https://...">
-        <input type="file" data-image="logoUrl" data-size="312" accept="image/*">
+        <input type="file" data-image="logoUrl" data-size="600" accept="image/*">
       </div>
+      <div class="row">
+        <div><label>Circle size <span class="val"></span></label><input type="range" min="80" max="160" step="2" data-path="logo.size" data-unit=" px"></div>
+        <div><label>Logo zoom <span class="val"></span></label><input type="range" min="50" max="300" step="5" data-path="logo.zoom" data-unit="%"></div>
+        <div><label>Move left / right</label><input type="range" min="-50" max="50" data-path="logo.x"></div>
+        <div><label>Move up / down</label><input type="range" min="-50" max="50" data-path="logo.y"></div>
+        <div><label>Border colour</label><input type="color" data-path="logo.border"></div>
+        <div><label>Border width <span class="val"></span></label><input type="range" min="0" max="8" data-path="logo.borderWidth" data-unit=" px"></div>
+      </div>
+      <div class="actions" style="margin-top:12px"><button id="logo-reset">Reset logo zoom and position</button></div>
+      <p class="hint">You can also drag the logo in the preview to move it. Turn the mouse wheel on the logo to zoom.</p>
     </div>
 
     <div class="card">
@@ -157,14 +191,21 @@ const setPath = (obj, path, v) => {
   keys.reduce((o, k) => (o[k] ??= {}), obj)[last] = v;
 };
 
-function refresh() { renderPage(config, $('#page')); }
+function refresh() { renderPage(config, $('#page')); attachLogoDrag(); setDirty(true); }
+
+function showVal(el) {
+  const span = el.parentElement.querySelector('.val');
+  if (span) span.textContent = el.value + (el.dataset.unit || '');
+}
 
 function fillForm() {
   config.socials ??= {}; config.promo ??= {}; config.links ??= []; config.contacts ??= [];
+  config.logo = { size: 104, zoom: 100, x: 0, y: 0, border: config.primary || '#FF7F17', borderWidth: 3, ...config.logo };
   document.querySelectorAll('[data-path]').forEach(el => {
     const v = getPath(config, el.dataset.path);
     if (el.type === 'checkbox') el.checked = !!v;
     else el.value = v ?? '';
+    showVal(el);
   });
   renderLinks();
   renderContacts();
@@ -173,10 +214,60 @@ function fillForm() {
 
 document.querySelectorAll('[data-path]').forEach(el => {
   el.addEventListener('input', () => {
-    setPath(config, el.dataset.path, el.type === 'checkbox' ? el.checked : el.value.trim());
+    const v = el.type === 'checkbox' ? el.checked
+      : el.type === 'range' ? Number(el.value)
+      : el.value.trim();
+    setPath(config, el.dataset.path, v);
+    showVal(el);
     refresh();
   });
 });
+
+// ---- Logo: drag to move, mouse wheel to zoom (in the preview) ----
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v)));
+
+function syncLogoInputs() {
+  document.querySelectorAll('[data-path^="logo."]').forEach(el => {
+    el.value = getPath(config, el.dataset.path);
+    showVal(el);
+  });
+}
+
+function attachLogoDrag() {
+  const box = $('#page .lp-logo');
+  const img = box?.querySelector('img');
+  if (!img) return;
+  box.style.cursor = 'grab';
+  box.style.touchAction = 'none';
+  box.title = 'Drag to move. Mouse wheel to zoom.';
+  const apply = () => { img.style.transform = logoTransform(config.logo); syncLogoInputs(); };
+  let start = null;
+  box.addEventListener('pointerdown', e => {
+    start = { px: e.clientX, py: e.clientY, x: config.logo.x, y: config.logo.y, w: box.clientWidth };
+    box.setPointerCapture(e.pointerId);
+    box.style.cursor = 'grabbing';
+  });
+  box.addEventListener('pointermove', e => {
+    if (!start) return;
+    config.logo.x = clamp(start.x + (e.clientX - start.px) / start.w * 100, -50, 50);
+    config.logo.y = clamp(start.y + (e.clientY - start.py) / start.w * 100, -50, 50);
+    apply();
+  });
+  const end = () => { start = null; box.style.cursor = 'grab'; };
+  box.addEventListener('pointerup', end);
+  box.addEventListener('pointercancel', end);
+  box.addEventListener('wheel', e => {
+    e.preventDefault();
+    config.logo.zoom = clamp(config.logo.zoom - Math.sign(e.deltaY) * 5, 50, 300);
+    apply();
+  }, { passive: false });
+}
+
+$('#logo-reset').onclick = () => {
+  Object.assign(config.logo, { zoom: 100, x: 0, y: 0 });
+  syncLogoInputs();
+  refresh();
+};
 
 // Image file -> small data URL, so it lives inside config.json
 document.querySelectorAll('[data-image]').forEach(input => {
@@ -354,12 +445,162 @@ $('#qr-png').onclick = () => {
   img.src = url;
 };
 
-// Start from the live config.json
-fetch('config.json', { cache: 'no-store' })
-  .then(r => r.ok ? r.json() : Promise.reject())
-  .then(cfg => { config = cfg; })
-  .catch(() => alert('Cannot load config.json. Click "Open config.json" to select the file.'))
-  .finally(() => { fillForm(); drawQr(); });
+// ---- Save to GitHub ----
+// The token lives only in this browser's localStorage, never in the site files.
+const GH_API = 'https://api.github.com';
+const CONFIG_PATH = 'config.json';
+const store = {
+  get: k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } },
+  set: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch {} }
+};
+const gh = {
+  get token() { return store.get('gh-token'); },
+  get repo() { return store.get('gh-repo') || $('#gh-repo').value.trim(); }
+};
+
+let dirty = false;
+function setDirty(v) {
+  dirty = v;
+  if (v) status('You have changes that are not saved.', 'dirty');
+}
+function status(text, kind = '') {
+  const s = $('#save-status');
+  s.textContent = text;
+  s.className = kind;
+}
+window.addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+
+async function ghFetch(path, options = {}) {
+  const res = await fetch(`${GH_API}/repos/${gh.repo}${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${gh.token}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...options.headers
+    }
+  });
+  if (!res.ok) {
+    const err = new Error(`GitHub ${res.status}`);
+    err.status = res.status;
+    throw err;
+  }
+  return res;
+}
+
+function ghError(e) {
+  if (e.status === 401) return 'GitHub did not accept the token. It is wrong or it has expired. Open "GitHub settings" and paste a new token.';
+  if (e.status === 403 || e.status === 404) return 'The token has no permission to change this repository. Make sure that it has "Contents: Read and write" for ' + gh.repo + '.';
+  if (e.status === 409) return 'GitHub has a newer version. Click "Save to GitHub" again.';
+  if (e.status === 422) return 'GitHub did not accept the file. Try again in a few seconds.';
+  return 'Cannot connect to GitHub. Check the internet connection and try again.';
+}
+
+// UTF-8 safe base64 (Thai text, data-URL images)
+function toBase64(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+async function loadFromGitHub() {
+  const res = await ghFetch(`/contents/${CONFIG_PATH}`, {
+    headers: { Accept: 'application/vnd.github.raw+json' },
+    cache: 'no-store'
+  });
+  return JSON.parse(await res.text());
+}
+
+async function saveToGitHub() {
+  if (!gh.token) {
+    $('#gh-settings').open = true;
+    $('#gh-token').focus();
+    status('Paste your GitHub token first, then click "Save settings and test".', 'err');
+    return;
+  }
+  const btn = $('#save-github');
+  btn.disabled = true;
+  status('Saving…');
+  try {
+    // Always ask for the newest file version, so the save does not fail with a conflict
+    const meta = await (await ghFetch(`/contents/${CONFIG_PATH}`, { cache: 'no-store' })).json();
+    await ghFetch(`/contents/${CONFIG_PATH}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message: 'Update Link Page from the Editor',
+        content: toBase64(JSON.stringify(config, null, 2) + '\n'),
+        sha: meta.sha
+      })
+    });
+    dirty = false;
+    status(`Saved at ${new Date().toLocaleTimeString()}. The Link Page updates in about 1 minute.`, 'ok');
+  } catch (e) {
+    status(ghError(e), 'err');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+$('#save-github').onclick = saveToGitHub;
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveToGitHub(); }
+});
+
+$('#gh-token').value = gh.token;
+if (store.get('gh-repo')) $('#gh-repo').value = store.get('gh-repo');
+
+$('#gh-connect').onclick = async () => {
+  store.set('gh-token', $('#gh-token').value.trim());
+  store.set('gh-repo', $('#gh-repo').value.trim());
+  if (!gh.token) { status('Paste a token first.', 'err'); return; }
+  status('Testing the connection…');
+  try {
+    const repo = await (await ghFetch('')).json();
+    if (!repo.permissions?.push) throw Object.assign(new Error(), { status: 403 });
+    status('Connected. You can now click "Save to GitHub".', 'ok');
+    $('#gh-settings').open = false;
+  } catch (e) {
+    status(ghError(e), 'err');
+  }
+};
+
+$('#gh-forget').onclick = () => {
+  store.set('gh-token', '');
+  $('#gh-token').value = '';
+  status('The token is removed from this browser.', 'ok');
+};
+
+// ---- Start ----
+// With a token, read config.json from GitHub (newest, even before the site rebuilds).
+// Without one, read the published config.json.
+async function start() {
+  let message = ['To save directly, open "GitHub settings" and add your token.', ''];
+  let loaded = false;
+  if (gh.token) {
+    try {
+      config = await loadFromGitHub();
+      loaded = true;
+      message = ['Connected to GitHub.', 'ok'];
+    } catch (e) {
+      message = [ghError(e), 'err'];
+    }
+  }
+  if (!loaded) {
+    try {
+      const r = await fetch('config.json', { cache: 'no-store' });
+      if (!r.ok) throw new Error();
+      config = await r.json();
+    } catch {
+      message = ['Cannot load config.json. Click "Open config.json" to select the file.', 'err'];
+    }
+  }
+  fillForm();
+  drawQr();
+  dirty = false;
+  status(...message);
+}
+start();
 </script>
 </body>
 </html>
