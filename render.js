@@ -15,12 +15,12 @@ const ICONS = {
 };
 const SOCIALS = [['line', 'LINE'], ['facebook', 'Facebook'], ['tiktok', 'TikTok'], ['instagram', 'Instagram']];
 
-// "brand" icon style: official logo marks (Simple Icons, filled) and brand colours.
-// Lazada has no official mark in Simple Icons, so it uses the cart line icon on Lazada colours.
+// "brand" icon style: tiles that look like each platform's app icon (see APP_ICONS).
+// `d` holds marks from Simple Icons (CC0); `solid` colours the chevron.
 const BRANDS = {
   shopee: { test: /shopee|shp\.ee/i, bg: '#EE4D2D', solid: '#EE4D2D',
     d: 'M15.9414 17.9633c.229-1.879-.981-3.077-4.1758-4.0969-1.548-.528-2.277-1.22-2.26-2.1719.065-1.056 1.048-1.825 2.352-1.85a5.2898 5.2898 0 0 1 2.8838.89c.116.072.197.06.263-.039.09-.145.315-.494.39-.62.051-.081.061-.187-.068-.281-.185-.1369-.704-.4149-.983-.5319a6.4697 6.4697 0 0 0-2.5118-.514c-1.909.008-3.4129 1.215-3.5389 2.826-.082 1.1629.494 2.1078 1.73 2.8278.262.152 1.6799.716 2.2438.892 1.774.552 2.695 1.5419 2.478 2.6969-.197 1.047-1.299 1.7239-2.818 1.7439-1.2039-.046-2.2878-.537-3.1278-1.19l-.141-.11c-.104-.08-.218-.075-.287.03-.05.077-.376.547-.458.67-.077.108-.035.168.045.234.35.293.817.613 1.134.775a6.7097 6.7097 0 0 0 2.8289.727 4.9048 4.9048 0 0 0 2.0759-.354c1.095-.465 1.8029-1.394 1.9449-2.554zM11.9986 1.4009c-2.068 0-3.7539 1.95-3.8329 4.3899h7.6657c-.08-2.44-1.765-4.3899-3.8328-4.3899zm7.8516 22.5981-.08.001-15.7843-.002c-1.074-.04-1.863-.91-1.971-1.991l-.01-.195L1.298 6.2858a.459.459 0 0 1 .45-.494h4.9748C6.8448 2.568 9.1607 0 11.9996 0c2.8388 0 5.1537 2.5689 5.2757 5.7898h4.9678a.459.459 0 0 1 .458.483l-.773 15.5883-.007.131c-.094 1.094-.979 1.9769-2.0709 2.0059z' },
-  lazada: { test: /lazada/i, bg: 'linear-gradient(135deg, #F7931E, #E1306C 55%, #0F146D)', solid: '#0F146D', line: 'cart' },
+  lazada: { test: /lazada/i, solid: '#F2386B' },
   tiktok: { test: /tiktok/i, bg: '#000000', solid: '#000000',
     d: 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z' },
   line: { test: /line\.me|lin\.ee/i, bg: '#06C755', solid: '#06C755',
@@ -37,19 +37,46 @@ function brandFor(url, iconName) {
   return BRANDS[iconName] ? iconName : null;
 }
 
+// Full app-icon tiles (48x48, with their own background), drawn to look like each
+// platform's phone app icon. `id` keeps gradient ids unique when an icon shows twice.
+const APP_ICONS = {
+  shopee: () => `<rect width="48" height="48" fill="#EE4D2D"/>` +
+    `<path transform="translate(9.6 9) scale(1.2)" fill="#fff" d="${BRANDS.shopee.d}"/>`,
+  line: () => `<rect width="48" height="48" fill="#06C755"/>` +
+    `<path transform="translate(8 8.5) scale(1.333)" fill="#fff" d="${BRANDS.line.d}"/>`,
+  tiktok: () => {
+    const t = 'translate(11 10) scale(1.1)', d = BRANDS.tiktok.d;
+    return `<rect width="48" height="48" fill="#000"/>` +
+      `<path transform="translate(-1.1 -1.1) ${t}" fill="#25F4EE" d="${d}"/>` +
+      `<path transform="translate(1.1 1.1) ${t}" fill="#FE2C55" d="${d}"/>` +
+      `<path transform="${t}" fill="#fff" d="${d}"/>`;
+  },
+  facebook: id => `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">` +
+    `<stop offset="0" stop-color="#18ACFE"/><stop offset="1" stop-color="#0163E0"/></linearGradient></defs>` +
+    `<rect width="48" height="48" fill="url(#${id})"/>` +
+    `<path fill="#fff" d="M27.6 48V29.3h6.2l.9-7.2h-7.1v-4.6c0-2.1.6-3.5 3.6-3.5h3.8V7.6c-.7-.1-2.9-.3-5.5-.3-5.4 0-9.2 3.3-9.2 9.4v5.4h-6.2v7.2h6.2V48z"/>`,
+  instagram: id => `<defs><radialGradient id="${id}" cx="0.3" cy="1.07" r="1.3">` +
+    `<stop offset="0" stop-color="#FDF497"/><stop offset=".05" stop-color="#FDF497"/><stop offset=".45" stop-color="#FD5949"/>` +
+    `<stop offset=".6" stop-color="#D6249F"/><stop offset=".9" stop-color="#285AEB"/></radialGradient></defs>` +
+    `<rect width="48" height="48" fill="url(#${id})"/>` +
+    `<g fill="none" stroke="#fff" stroke-width="3.4"><rect x="11" y="11" width="26" height="26" rx="8"/><circle cx="24" cy="24" r="6.2"/></g>` +
+    `<circle cx="31.7" cy="16.3" r="2.1" fill="#fff"/>`,
+  lazada: id => `<defs><linearGradient id="${id}" x1="1" y1="0" x2="0" y2="1">` +
+    `<stop offset="0" stop-color="#FF7A2F"/><stop offset=".4" stop-color="#F2386B"/><stop offset=".75" stop-color="#C23CB4"/>` +
+    `<stop offset="1" stop-color="#5B4BF5"/></linearGradient></defs>` +
+    `<rect width="48" height="48" fill="url(#${id})"/>` +
+    `<path fill="#fff" d="M24 16.2l6.6-4.6c2.3-1.6 5.5-1.3 7.5.7l2.3 2.4c1.9 2 1.9 5.1-.1 7L24 37.8 7.7 21.7c-2-1.9-2-5-.1-7l2.3-2.4c2-2 5.2-2.3 7.5-.7z"/>` +
+    `<text x="24" y="27.4" text-anchor="middle" font-family="Prompt, Kanit, sans-serif" font-weight="700" font-size="11" fill="#E8336D">Laz</text>`
+};
+let appIconId = 0;
+
 function brandIcon(key, size) {
-  const b = BRANDS[key];
-  if (b.line) return icon(b.line, size);
-  const ns = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(ns, 'svg');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('width', size);
   svg.setAttribute('height', size);
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'currentColor');
+  svg.setAttribute('viewBox', '0 0 48 48');
   svg.setAttribute('aria-hidden', 'true');
-  const path = document.createElementNS(ns, 'path');
-  path.setAttribute('d', b.d);
-  svg.appendChild(path);
+  svg.innerHTML = APP_ICONS[key]('app-grad-' + (++appIconId));
   return svg;
 }
 const CONTACTS_URL = '#contacts';
@@ -174,9 +201,8 @@ function renderPage(config, root) {
       const a = linkOrPlain('lp-social', c.socials?.[k]);
       a.setAttribute('aria-label', name);
       if (useBrand) {
-        a.style.background = BRANDS[k].bg;
-        a.style.color = '#FFFFFF';
-        a.appendChild(brandIcon(k, 22));
+        a.classList.add('is-app');
+        a.appendChild(brandIcon(k, 44));
       } else {
         a.appendChild(icon(k, 22));
       }
@@ -227,15 +253,14 @@ function renderPage(config, root) {
     }
     const chip = el('span', 'lp-chip');
     const brand = useBrand && l.url !== CONTACTS_URL && brandFor(l.url, l.icon);
-    chip.appendChild(brand ? brandIcon(brand, 22) : icon(l.icon, 22));
+    chip.appendChild(brand ? brandIcon(brand, 44) : icon(l.icon, 22));
     const labels = el('span', 'lp-labels');
     labels.appendChild(el('span', 'lp-label', l.label || ''));
     if (l.sub) labels.appendChild(el('span', 'lp-sub', l.sub));
     const chev = icon('chevron', 20, { stroke: 2.2 });
     chev.classList.add('lp-chevron');
     if (brand) {
-      chip.style.background = BRANDS[brand].bg;
-      chip.style.color = '#FFFFFF';
+      chip.classList.add('is-app');
       chev.style.color = BRANDS[brand].solid;
     }
     a.append(chip, labels, chev);
