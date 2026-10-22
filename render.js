@@ -37,47 +37,60 @@ function brandFor(url, iconName) {
   return BRANDS[iconName] ? iconName : null;
 }
 
-// Full app-icon tiles (48x48, with their own background), drawn to look like each
-// platform's phone app icon. `id` keeps gradient ids unique when an icon shows twice.
-const APP_ICONS = {
-  shopee: () => `<rect width="48" height="48" fill="#EE4D2D"/>` +
-    `<path transform="translate(9.6 9) scale(1.2)" fill="#fff" d="${BRANDS.shopee.d}"/>`,
-  line: () => `<rect width="48" height="48" fill="#06C755"/>` +
-    `<path transform="translate(8 8.5) scale(1.333)" fill="#fff" d="${BRANDS.line.d}"/>`,
-  tiktok: () => {
-    const t = 'translate(11 10) scale(1.1)', d = BRANDS.tiktok.d;
-    return `<rect width="48" height="48" fill="#000"/>` +
-      `<path transform="translate(-1.1 -1.1) ${t}" fill="#25F4EE" d="${d}"/>` +
-      `<path transform="translate(1.1 1.1) ${t}" fill="#FE2C55" d="${d}"/>` +
-      `<path transform="${t}" fill="#fff" d="${d}"/>`;
+// Brand look, based on each platform's app icon: `bg` fills the chip (any shape),
+// `mark` is the white logo drawn on a 48x48 grid with no background.
+const BRAND_TILES = {
+  shopee: {
+    bg: '#EE4D2D',
+    mark: () => `<path transform="translate(9.6 9) scale(1.2)" fill="#fff" d="${BRANDS.shopee.d}"/>`
   },
-  facebook: id => `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">` +
-    `<stop offset="0" stop-color="#18ACFE"/><stop offset="1" stop-color="#0163E0"/></linearGradient></defs>` +
-    `<rect width="48" height="48" fill="url(#${id})"/>` +
-    `<path fill="#fff" d="M27.6 48V29.3h6.2l.9-7.2h-7.1v-4.6c0-2.1.6-3.5 3.6-3.5h3.8V7.6c-.7-.1-2.9-.3-5.5-.3-5.4 0-9.2 3.3-9.2 9.4v5.4h-6.2v7.2h6.2V48z"/>`,
-  instagram: id => `<defs><radialGradient id="${id}" cx="0.3" cy="1.07" r="1.3">` +
-    `<stop offset="0" stop-color="#FDF497"/><stop offset=".05" stop-color="#FDF497"/><stop offset=".45" stop-color="#FD5949"/>` +
-    `<stop offset=".6" stop-color="#D6249F"/><stop offset=".9" stop-color="#285AEB"/></radialGradient></defs>` +
-    `<rect width="48" height="48" fill="url(#${id})"/>` +
-    `<g fill="none" stroke="#fff" stroke-width="3.4"><rect x="11" y="11" width="26" height="26" rx="8"/><circle cx="24" cy="24" r="6.2"/></g>` +
-    `<circle cx="31.7" cy="16.3" r="2.1" fill="#fff"/>`,
-  lazada: id => `<defs><linearGradient id="${id}" x1="1" y1="0" x2="0" y2="1">` +
-    `<stop offset="0" stop-color="#FF7A2F"/><stop offset=".4" stop-color="#F2386B"/><stop offset=".75" stop-color="#C23CB4"/>` +
-    `<stop offset="1" stop-color="#5B4BF5"/></linearGradient></defs>` +
-    `<rect width="48" height="48" fill="url(#${id})"/>` +
-    `<path fill="#fff" d="M24 16.2l6.6-4.6c2.3-1.6 5.5-1.3 7.5.7l2.3 2.4c1.9 2 1.9 5.1-.1 7L24 37.8 7.7 21.7c-2-1.9-2-5-.1-7l2.3-2.4c2-2 5.2-2.3 7.5-.7z"/>` +
-    `<text x="24" y="27.4" text-anchor="middle" font-family="Prompt, Kanit, sans-serif" font-weight="700" font-size="11" fill="#E8336D">Laz</text>`
+  line: {
+    bg: '#06C755',
+    mark: () => `<path transform="translate(8 8.5) scale(1.333)" fill="#fff" d="${BRANDS.line.d}"/>`
+  },
+  tiktok: {
+    bg: '#000000',
+    mark: () => {
+      const t = 'translate(11 10) scale(1.1)', d = BRANDS.tiktok.d;
+      return `<path transform="translate(-1.1 -1.1) ${t}" fill="#25F4EE" d="${d}"/>` +
+        `<path transform="translate(1.1 1.1) ${t}" fill="#FE2C55" d="${d}"/>` +
+        `<path transform="${t}" fill="#fff" d="${d}"/>`;
+    }
+  },
+  facebook: {
+    bg: 'linear-gradient(180deg, #18ACFE, #0163E0)',
+    // The "f" runs to the bottom edge, as in the app icon (see .brand-facebook in style.css)
+    mark: () => `<path fill="#fff" d="M27.6 48V29.3h6.2l.9-7.2h-7.1v-4.6c0-2.1.6-3.5 3.6-3.5h3.8V7.6c-.7-.1-2.9-.3-5.5-.3-5.4 0-9.2 3.3-9.2 9.4v5.4h-6.2v7.2h6.2V48z"/>`
+  },
+  instagram: {
+    bg: 'radial-gradient(circle at 30% 107%, #FDF497 0%, #FDF497 5%, #FD5949 45%, #D6249F 60%, #285AEB 90%)',
+    mark: () => `<g fill="none" stroke="#fff" stroke-width="3.4"><rect x="11" y="11" width="26" height="26" rx="8"/><circle cx="24" cy="24" r="6.2"/></g>` +
+      `<circle cx="31.7" cy="16.3" r="2.1" fill="#fff"/>`
+  },
+  lazada: {
+    bg: 'radial-gradient(circle at 0% 100%, #3F6BFF 0, rgba(63,107,255,0) 32%), ' +
+      'radial-gradient(circle at 100% 0%, #6C5CF2 0, rgba(108,92,242,0) 30%), ' +
+      'linear-gradient(135deg, #FF1466 0%, #EC1F79 45%, #B4309F 100%)',
+    // White folded heart with "Laz", from the current Lazada app icon
+    mark: () => `<path fill="#fff" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" d="M6.8 10.2 24 15.4l17.2-5.2v18.4L24 38.6 6.8 28.6z"/>` +
+      `<path fill="#F7E1EC" opacity=".55" d="M6.8 10.2 24 15.4v4.2L6.8 14.6z M41.2 10.2 24 15.4v4.2l17.2-5z"/>` +
+      `<text x="24" y="30.2" text-anchor="middle" font-family="Prompt, Kanit, sans-serif" font-weight="600" font-size="12.5" fill="#EC1F79">Laz</text>`
+  }
 };
-let appIconId = 0;
 
-function brandIcon(key, size) {
+function brandIcon(key) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('width', size);
-  svg.setAttribute('height', size);
   svg.setAttribute('viewBox', '0 0 48 48');
   svg.setAttribute('aria-hidden', 'true');
-  svg.innerHTML = APP_ICONS[key]('app-grad-' + (++appIconId));
+  svg.innerHTML = BRAND_TILES[key].mark();
   return svg;
+}
+
+// Brand colour and logo on a chip or social tile, keeping the design's shape.
+function applyBrand(tile, key) {
+  tile.classList.add('is-brand', 'brand-' + key);
+  tile.style.background = BRAND_TILES[key].bg;
+  tile.appendChild(brandIcon(key));
 }
 const CONTACTS_URL = '#contacts';
 const SAFE_URL = /^(https?:|mailto:|tel:)/i;
@@ -201,8 +214,7 @@ function renderPage(config, root) {
       const a = linkOrPlain('lp-social', c.socials?.[k]);
       a.setAttribute('aria-label', name);
       if (useBrand) {
-        a.classList.add('is-app');
-        a.appendChild(brandIcon(k, 44));
+        applyBrand(a, k);
       } else {
         a.appendChild(icon(k, 22));
       }
@@ -253,14 +265,14 @@ function renderPage(config, root) {
     }
     const chip = el('span', 'lp-chip');
     const brand = useBrand && l.url !== CONTACTS_URL && brandFor(l.url, l.icon);
-    chip.appendChild(brand ? brandIcon(brand, 44) : icon(l.icon, 22));
+    if (brand) applyBrand(chip, brand);
+    else chip.appendChild(icon(l.icon, 22));
     const labels = el('span', 'lp-labels');
     labels.appendChild(el('span', 'lp-label', l.label || ''));
     if (l.sub) labels.appendChild(el('span', 'lp-sub', l.sub));
     const chev = icon('chevron', 20, { stroke: 2.2 });
     chev.classList.add('lp-chevron');
     if (brand) {
-      chip.classList.add('is-app');
       chev.style.color = BRANDS[brand].solid;
     }
     a.append(chip, labels, chev);

@@ -136,10 +136,13 @@ html, body { margin: 0; min-height: 100%; }
 }
 .lp-chip svg { transform: skewX(12deg); }
 
-/* Brand style: square app-icon tiles (the SVG draws its own background) */
-.lp-chip.is-app, .lp-social.is-app { background: none; overflow: hidden; }
-.lp-chip.is-app { width: 44px; height: 44px; border-radius: 11px; transform: none; }
-.lp-chip.is-app svg, .lp-social.is-app svg { transform: none; width: 100%; height: 100%; display: block; }
+/* Brand style: brand colour in the design's own shapes, white logo a little smaller */
+.lp-chip.is-brand, .lp-social.is-brand { overflow: hidden; }
+.lp-chip.is-brand svg { width: 32px; height: 32px; }
+.lp-social.is-brand svg { width: 34px; height: 34px; }
+/* The Facebook "f" sits on the bottom edge, as in its app icon */
+.brand-facebook { align-items: flex-end; }
+.lp-chip.brand-facebook svg { width: 34px; height: 34px; }
 .lp-labels { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
 .lp-label { font-size: 17px; font-weight: 400; }
 .lp-sub { font-size: 12px; color: #5C5450; }
