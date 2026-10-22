@@ -70,7 +70,7 @@
       "sub": "Contact us",
       "url": "#contacts",
       "icon": "phone",
-      "kind": "secondary",
+      "kind": "primary",
       "visible": true
     }
   ],
