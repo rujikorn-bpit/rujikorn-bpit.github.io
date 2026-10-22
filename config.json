@@ -16,7 +16,7 @@
   "accent": "#D7602F",
   "background": "#FFF8F3",
   "font": "Prompt",
-  "iconStyle": "brand",
+  "iconStyle": "design",
   "socials": {
     "line": "",
     "facebook": "https://www.facebook.com/profile.php?id=61595229913008",
@@ -70,7 +70,7 @@
       "sub": "Contact us",
       "url": "#contacts",
       "icon": "phone",
-      "kind": "primary",
+      "kind": "secondary",
       "visible": true
     }
   ],
