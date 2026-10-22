@@ -122,6 +122,11 @@ html, body { margin: 0; min-height: 100%; }
 .lp-link:active { transform: scale(.98); background: #FCEBE2; border-color: var(--primary); }
 @media (hover: hover) { .lp-link:hover { background: #FEF5EF; } }
 
+/* Buttons that have no link yet: same look, no press effect */
+.no-link { cursor: default; -webkit-tap-highlight-color: transparent; }
+.lp-link.no-link:active, .lp-link.no-link:hover { transform: none; background: #FFFFFF; border-color: #EADFD6; }
+.lp-social.no-link:active, .lp-promo-cta.no-link:active { transform: none; }
+
 .lp-chip {
   width: 46px; height: 40px; flex: none;
   border-radius: 8px;

@@ -113,18 +113,23 @@
       </div>
       <label for="font">Font</label>
       <select id="font" data-path="font"><option>Prompt</option><option>Kanit</option></select>
+      <label for="icon-style">Button icon style</label>
+      <select id="icon-style" data-path="iconStyle">
+        <option value="design">Claude Design (orange and teal icons)</option>
+        <option value="brand">Platform logos and colours</option>
+      </select>
       <p class="hint">Text on a colour changes to white or black automatically, so it is always easy to read.</p>
     </div>
 
     <div class="card">
       <h2>Social icons</h2>
       <div class="row">
-        <div><label>LINE</label><input type="url" data-path="socials.line" placeholder="https://line.me/..."></div>
-        <div><label>Facebook</label><input type="url" data-path="socials.facebook" placeholder="https://facebook.com/..."></div>
-        <div><label>TikTok</label><input type="url" data-path="socials.tiktok" placeholder="https://tiktok.com/@..."></div>
-        <div><label>Instagram</label><input type="url" data-path="socials.instagram" placeholder="https://instagram.com/..."></div>
+        <div><label class="inline"><input type="checkbox" data-path="socialsVisible.line"> Show LINE</label><input type="url" data-path="socials.line" placeholder="https://line.me/..."></div>
+        <div><label class="inline"><input type="checkbox" data-path="socialsVisible.facebook"> Show Facebook</label><input type="url" data-path="socials.facebook" placeholder="https://facebook.com/..."></div>
+        <div><label class="inline"><input type="checkbox" data-path="socialsVisible.tiktok"> Show TikTok</label><input type="url" data-path="socials.tiktok" placeholder="https://tiktok.com/@..."></div>
+        <div><label class="inline"><input type="checkbox" data-path="socialsVisible.instagram"> Show Instagram</label><input type="url" data-path="socials.instagram" placeholder="https://instagram.com/..."></div>
       </div>
-      <p class="hint">An empty field hides that icon.</p>
+      <p class="hint">An icon with no link shows on the page, but nothing happens when people touch it.</p>
     </div>
 
     <div class="card">
@@ -148,7 +153,7 @@
       <h2>Link buttons</h2>
       <div id="links"></div>
       <div class="actions"><button id="add-link">+ Add link</button></div>
-      <p class="hint">Type <code>#contacts</code> as the link to open the contact pop-up. Clear "Show" to hide a button.</p>
+      <p class="hint">Type <code>#contacts</code> as the link to open the contact pop-up. Clear "Show" to hide a button. A button with no link shows, but nothing happens when people touch it.</p>
     </div>
 
     <div class="card">
@@ -200,6 +205,8 @@ function showVal(el) {
 
 function fillForm() {
   config.socials ??= {}; config.promo ??= {}; config.links ??= []; config.contacts ??= [];
+  config.iconStyle ||= 'design';
+  config.socialsVisible = { line: true, facebook: true, tiktok: true, instagram: true, ...config.socialsVisible };
   config.logo = { size: 104, zoom: 100, x: 0, y: 0, border: config.primary || '#FF7F17', borderWidth: 3, ...config.logo };
   document.querySelectorAll('[data-path]').forEach(el => {
     const v = getPath(config, el.dataset.path);

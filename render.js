@@ -14,6 +14,44 @@ const ICONS = {
   close: 'M6 6l12 12 M18 6L6 18'
 };
 const SOCIALS = [['line', 'LINE'], ['facebook', 'Facebook'], ['tiktok', 'TikTok'], ['instagram', 'Instagram']];
+
+// "brand" icon style: official logo marks (Simple Icons, filled) and brand colours.
+// Lazada has no official mark in Simple Icons, so it uses the cart line icon on Lazada colours.
+const BRANDS = {
+  shopee: { test: /shopee|shp\.ee/i, bg: '#EE4D2D', solid: '#EE4D2D',
+    d: 'M15.9414 17.9633c.229-1.879-.981-3.077-4.1758-4.0969-1.548-.528-2.277-1.22-2.26-2.1719.065-1.056 1.048-1.825 2.352-1.85a5.2898 5.2898 0 0 1 2.8838.89c.116.072.197.06.263-.039.09-.145.315-.494.39-.62.051-.081.061-.187-.068-.281-.185-.1369-.704-.4149-.983-.5319a6.4697 6.4697 0 0 0-2.5118-.514c-1.909.008-3.4129 1.215-3.5389 2.826-.082 1.1629.494 2.1078 1.73 2.8278.262.152 1.6799.716 2.2438.892 1.774.552 2.695 1.5419 2.478 2.6969-.197 1.047-1.299 1.7239-2.818 1.7439-1.2039-.046-2.2878-.537-3.1278-1.19l-.141-.11c-.104-.08-.218-.075-.287.03-.05.077-.376.547-.458.67-.077.108-.035.168.045.234.35.293.817.613 1.134.775a6.7097 6.7097 0 0 0 2.8289.727 4.9048 4.9048 0 0 0 2.0759-.354c1.095-.465 1.8029-1.394 1.9449-2.554zM11.9986 1.4009c-2.068 0-3.7539 1.95-3.8329 4.3899h7.6657c-.08-2.44-1.765-4.3899-3.8328-4.3899zm7.8516 22.5981-.08.001-15.7843-.002c-1.074-.04-1.863-.91-1.971-1.991l-.01-.195L1.298 6.2858a.459.459 0 0 1 .45-.494h4.9748C6.8448 2.568 9.1607 0 11.9996 0c2.8388 0 5.1537 2.5689 5.2757 5.7898h4.9678a.459.459 0 0 1 .458.483l-.773 15.5883-.007.131c-.094 1.094-.979 1.9769-2.0709 2.0059z' },
+  lazada: { test: /lazada/i, bg: 'linear-gradient(135deg, #F7931E, #E1306C 55%, #0F146D)', solid: '#0F146D', line: 'cart' },
+  tiktok: { test: /tiktok/i, bg: '#000000', solid: '#000000',
+    d: 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z' },
+  line: { test: /line\.me|lin\.ee/i, bg: '#06C755', solid: '#06C755',
+    d: 'M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314' },
+  facebook: { test: /facebook|fb\.(com|me)/i, bg: '#0866FF', solid: '#0866FF',
+    d: 'M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z' },
+  instagram: { test: /instagram|instagr\.am/i, bg: 'linear-gradient(45deg, #FEDA75, #FA7E1E 25%, #D62976 50%, #962FBF 75%, #4F5BD5)', solid: '#D62976',
+    d: 'M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077' }
+};
+
+// Which brand a link belongs to, from its URL (or its icon name as a fallback).
+function brandFor(url, iconName) {
+  for (const [k, b] of Object.entries(BRANDS)) if (b.test.test(url || '')) return k;
+  return BRANDS[iconName] ? iconName : null;
+}
+
+function brandIcon(key, size) {
+  const b = BRANDS[key];
+  if (b.line) return icon(b.line, size);
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width', size);
+  svg.setAttribute('height', size);
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'currentColor');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', b.d);
+  svg.appendChild(path);
+  return svg;
+}
 const CONTACTS_URL = '#contacts';
 const SAFE_URL = /^(https?:|mailto:|tel:)/i;
 
@@ -57,6 +95,16 @@ function external(a, url) {
   if (/^https?:/i.test(url)) { a.target = '_blank'; a.rel = 'noopener'; }
 }
 
+// A link when the URL is set; otherwise the same button without a link (no link added yet).
+function linkOrPlain(cls, url) {
+  if (SAFE_URL.test(url || '')) {
+    const a = el('a', cls);
+    external(a, url);
+    return a;
+  }
+  return el('span', cls + ' no-link');
+}
+
 // Logo position (x, y in % of the circle) and zoom (in %) inside the circle.
 function logoTransform(lg) {
   return `translate(${lg.x ?? 0}%, ${lg.y ?? 0}%) scale(${(lg.zoom ?? 100) / 100})`;
@@ -70,6 +118,7 @@ function renderPage(config, root) {
   const secondary = c.secondary || '#2B6684';
   const font = c.font || 'Prompt';
   const lg = c.logo || {};
+  const useBrand = c.iconStyle === 'brand';
 
   const vars = {
     '--primary': primary,
@@ -117,15 +166,20 @@ function renderPage(config, root) {
   if (c.taglineEn) text.appendChild(el('p', 'lp-tagline-en', c.taglineEn));
   header.appendChild(text);
 
-  const socials = SOCIALS.filter(([k]) => SAFE_URL.test(c.socials?.[k] || ''));
+  const socials = SOCIALS.filter(([k]) => c.socialsVisible?.[k] !== false);
   if (socials.length) {
     const nav = el('nav', 'lp-socials');
     nav.setAttribute('aria-label', 'Social');
     for (const [k, name] of socials) {
-      const a = el('a', 'lp-social');
-      external(a, c.socials[k]);
+      const a = linkOrPlain('lp-social', c.socials?.[k]);
       a.setAttribute('aria-label', name);
-      a.appendChild(icon(k, 22));
+      if (useBrand) {
+        a.style.background = BRANDS[k].bg;
+        a.style.color = '#FFFFFF';
+        a.appendChild(brandIcon(k, 22));
+      } else {
+        a.appendChild(icon(k, 22));
+      }
       nav.appendChild(a);
     }
     header.appendChild(nav);
@@ -140,9 +194,9 @@ function renderPage(config, root) {
     if (promo.tag) left.appendChild(el('span', 'lp-promo-tag', promo.tag));
     if (promo.title) left.appendChild(el('p', 'lp-promo-title', promo.title));
     if (promo.text) left.appendChild(el('p', 'lp-promo-body', promo.text));
-    if (promo.cta && SAFE_URL.test(promo.url || '')) {
-      const cta = el('a', 'lp-promo-cta', promo.cta + ' →');
-      external(cta, promo.url);
+    if (promo.cta) {
+      const cta = linkOrPlain('lp-promo-cta', promo.url);
+      cta.textContent = promo.cta + ' →';
       left.appendChild(cta);
     }
     const right = el('div', 'lp-promo-img');
@@ -160,24 +214,30 @@ function renderPage(config, root) {
   const list = el('div', 'lp-links');
   let sheet = null;
   for (const l of c.links || []) {
-    const isContacts = l.url === CONTACTS_URL;
-    if (l.visible === false || !(isContacts || SAFE_URL.test(l.url || ''))) continue;
-
-    const a = el('a', 'lp-link' + (l.kind === 'secondary' ? ' is-secondary' : ''));
-    if (isContacts) {
+    if (l.visible === false) continue;
+    const cls = 'lp-link' + (l.kind === 'secondary' ? ' is-secondary' : '');
+    let a;
+    if (l.url === CONTACTS_URL) {
+      a = el('a', cls);
       a.href = CONTACTS_URL;
       a.setAttribute('aria-haspopup', 'dialog');
       a.addEventListener('click', e => { e.preventDefault(); sheet?.open(a); });
     } else {
-      external(a, l.url);
+      a = linkOrPlain(cls, l.url);
     }
     const chip = el('span', 'lp-chip');
-    chip.appendChild(icon(l.icon, 22));
+    const brand = useBrand && l.url !== CONTACTS_URL && brandFor(l.url, l.icon);
+    chip.appendChild(brand ? brandIcon(brand, 22) : icon(l.icon, 22));
     const labels = el('span', 'lp-labels');
     labels.appendChild(el('span', 'lp-label', l.label || ''));
     if (l.sub) labels.appendChild(el('span', 'lp-sub', l.sub));
     const chev = icon('chevron', 20, { stroke: 2.2 });
     chev.classList.add('lp-chevron');
+    if (brand) {
+      chip.style.background = BRANDS[brand].bg;
+      chip.style.color = '#FFFFFF';
+      chev.style.color = BRANDS[brand].solid;
+    }
     a.append(chip, labels, chev);
     list.appendChild(a);
   }
